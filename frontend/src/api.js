@@ -52,3 +52,40 @@ export const IMPACT_LABELS = {
   MANUAL_CONTACT: '人工联系',
   PROTECTED_CHARGING: '充电中受保护',
 }
+
+export const WO_STATUS_LABELS = {
+  PENDING: '待排程（设备仍可预约）',
+  SCHEDULED: '已排程',
+  IN_PROGRESS: '已挂牌作业中',
+  PENDING_ACCEPTANCE: '测试合格待签字',
+  ACCEPTANCE_FAILED: '验收失败（禁止恢复）',
+  COMPLETED: '已验收恢复',
+  CANCELLED: '已取消',
+}
+
+export const DEVICE_STATUS_LABELS = {
+  OPERATIONAL: '正常可售',
+  SCHEDULED: '已排程待作业',
+  ISOLATED: '已隔离/作业中',
+  PENDING_ACCEPTANCE: '待验收',
+  ACCEPTANCE_FAILED: '验收失败·停运',
+  FORCED_OUT: '强制停机',
+}
+
+export const RISK_LABELS = {
+  LOW: '低', MEDIUM: '中', HIGH: '高', CRITICAL: '紧急/严重',
+}
+
+export const SUGGESTION_LABELS = {
+  OTHER_CONNECTOR_NOW: '当前时段替代枪（候选）',
+  SHIFT_TIME: '顺延时段（候选）',
+  LOWER_POWER: '降功率方案（候选）',
+  WAIT_RECOVERY: '等待恢复/无安全候选',
+  POOL: '资源池名额（候选）',
+}
+
+export const WO_KIND_LABELS = {
+  PREVENTIVE: '预防工单',
+  ALARM: '告警工单',
+  CORRECTIVE: '返工工单',
+}

@@ -199,3 +199,74 @@ class ServiceActionCreate(BaseModel):
     amount: float | None = None
     note: str = ""
     idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+# ---------- Feature-2：工单排程 / 回执 / 研判 ----------
+
+class ScheduleRequest(BaseModel):
+    # MERGED=合并停电窗口；SEPARATE=分开作业
+    strategy: str = "SEPARATE"
+    # SEPARATE 时：B_ONLY 只排 B 接头（可行），BOTH_TONIGHT 还要求今晚插入断路器（会校验班次）
+    scope: str = "B_ONLY"
+    technician_id: int
+    spare_batch_id: int | None = None
+    cooldown_minutes: int | None = None
+    merged_start_at: datetime | None = None
+    b_start_at: datetime | None = None
+    breaker_start_at: datetime | None = None
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class StartWorkRequest(BaseModel):
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class DelayRequest(BaseModel):
+    delay_minutes: int | None = Field(default=None, ge=0, le=600)
+    new_planned_end_at: datetime | None = None
+    new_planned_start_at: datetime | None = None
+    reason: str = "工单延期"
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class AcceptanceRequest(BaseModel):
+    insulation_mohm: float = Field(ge=0)
+    load_test_kw: float = Field(ge=0)
+    load_test_passed: bool = True
+    load_tested_at: datetime | None = None
+    final_reading_at: datetime | None = None
+    readings_note: str = ""
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class SignoffRequest(BaseModel):
+    signoff_by: str = Field(min_length=2, max_length=64)
+    signed_at: datetime | None = None
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class TriageReadingRequest(BaseModel):
+    connector_id: int
+    value_mohm: float = Field(ge=0)
+    observed_at: datetime | None = None
+    source: str = "周四巡检绝缘测试"
+    note: str = ""
+    idempotency_key: str = Field(min_length=8, max_length=64)
+
+
+class ReceiptCreate(BaseModel):
+    # WORK_ORDER_DELAYED / ACCEPTANCE_FAILED_RECEIPT / RESERVATION_CANCELLED
+    type: str
+    work_order_id: int | None = None
+    reservation_id: int | None = None
+    reason: str = "外部回执"
+    # 延期
+    delay_minutes: int | None = Field(default=None, ge=0, le=600)
+    new_planned_end_at: datetime | None = None
+    # 验收失败读数
+    insulation_mohm: float | None = None
+    load_test_kw: float | None = None
+    load_test_passed: bool | None = False
+    load_tested_at: datetime | None = None
+    final_reading_at: datetime | None = None
+    idempotency_key: str = Field(min_length=8, max_length=64)

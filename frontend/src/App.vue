@@ -4,6 +4,7 @@
     <nav>
       <RouterLink to="/driver">司机端</RouterLink>
       <RouterLink to="/operations">运营端</RouterLink>
+      <RouterLink to="/maintenance">运维工单/停电排程</RouterLink>
     </nav>
   </header>
   <main>

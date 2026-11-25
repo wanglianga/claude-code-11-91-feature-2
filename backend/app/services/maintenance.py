@@ -40,6 +40,11 @@ LOCK_NS_SITE = 91001
 def connector_power_at(connector: Connector, maintenances: list[MaintenanceWindow],
                        t0: datetime, t1: datetime) -> float:
     """计算枪口在 [t0,t1) 切片内的有效功率（不考虑预约占用）。"""
+    # Feature-2 硬闸门：未验收/验收失败/隔离/强制停机设备一律 0，禁止作为替代履约
+    if connector.operational_status in {
+        "ISOLATED", "PENDING_ACCEPTANCE", "ACCEPTANCE_FAILED", "FORCED_OUT"
+    }:
+        return 0.0
     power = float(connector.rated_power_kw)
     for m in maintenances:
         if m.connector_id != connector.id:

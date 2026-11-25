@@ -159,7 +159,12 @@ def confirm_reservation(db: Session, req: ConfirmRequest) -> Reservation:
 # ---------- 状态转换 ----------
 
 ALLOWED_TRANSITIONS = {
-    "cancel": {ReservationStatus.CONFIRMED: ReservationStatus.CANCELLED},
+    # 受维护影响进入改选/人工联系的订单，客户也可以取消（释放/收尾容量）
+    "cancel": {
+        ReservationStatus.CONFIRMED: ReservationStatus.CANCELLED,
+        ReservationStatus.NEEDS_RESELECTION: ReservationStatus.CANCELLED,
+        ReservationStatus.MANUAL_CONTACT: ReservationStatus.CANCELLED,
+    },
     "arrive": {ReservationStatus.CONFIRMED: ReservationStatus.ARRIVED},
     "start_charging": {
         ReservationStatus.CONFIRMED: ReservationStatus.CHARGING,

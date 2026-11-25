@@ -1,0 +1,5 @@
+# 保证 shell 脚本在 Linux 容器/评测环境中始终为 LF
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf

@@ -1,5 +1,19 @@
 <template>
-  <div class="grid two">
+  <div class="stack">
+    <div class="panel" style="padding:10px 14px">
+      <div class="row" style="gap:8px">
+        <button :class="tab==='reservation' ? '' : 'secondary'" @click="tab='reservation'">
+          预约 / 维护窗口 / 客服处置
+        </button>
+        <button :class="tab==='workorder' ? '' : 'secondary'" @click="tab='workorder'">
+          🛠 预防/告警工单 · 拓扑 · 备件 · 持证技师 · 停电方案对比
+        </button>
+      </div>
+    </div>
+
+    <MaintenanceConsole v-if="tab === 'workorder'" />
+
+    <div v-else class="grid two">
     <!-- 左：维护操作 -->
     <section class="stack">
       <div class="panel">
@@ -181,13 +195,16 @@
         </table>
       </div>
     </section>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, reactive, ref, computed } from 'vue'
 import { api, IMPACT_LABELS, MODE_LABELS, newIdempotencyKey, STATUS_LABELS } from '../api.js'
+import MaintenanceConsole from './MaintenanceView.vue'
 
+const tab = ref('reservation')
 const sites = ref([])
 const reservations = ref([])
 const windows = ref([])

@@ -39,6 +39,16 @@ def _window_end(m: MaintenanceWindow) -> datetime:
     return m.ended_at or m.planned_end_at
 
 
+# 这些设备状态意味着“当下不可售、未验收/强制停运”，容量引擎直接把功率置 0，
+# 即使维护窗口时间边界已过也不允许继续售卖，直到验收通过并显式恢复为 OPERATIONAL。
+DOWN_OPERATIONAL_STATUSES = {
+    "ISOLATED",
+    "PENDING_ACCEPTANCE",
+    "ACCEPTANCE_FAILED",
+    "FORCED_OUT",
+}
+
+
 def build_segments(db: Session, site_id: int, ws: datetime, we: datetime) -> list[Segment]:
     """构造 [ws, we) 内功率/占用状态恒定的时间切片。"""
     connectors = db.scalars(
@@ -80,6 +90,10 @@ def build_segments(db: Session, site_id: int, ws: datetime, we: datetime) -> lis
             continue
         seg = Segment(start_at=t0, end_at=t1)
         for c in connectors:
+            if c.operational_status in DOWN_OPERATIONAL_STATUSES:
+                # 未验收 / 验收失败 / 已隔离 / 强制停机：硬闸门，任何切片都不可售
+                seg.power[c.id] = 0.0
+                continue
             power = float(c.rated_power_kw)
             for m in maintenances:
                 if m.connector_id != c.id:
